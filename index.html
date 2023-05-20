@@ -65,12 +65,14 @@
         likeButtonElement.addEventListener("click", () => {
           console.log(everyUser);
           const index = Number(likeButtonElement.dataset.index);
-          for (element of everyUser) {
+          for (const element of everyUser) {
             if (element.index === index) {
               if (element.active === "") {
-                element.active = "-active-like"
+                element.likes += 1;
+                element.active = "-active-like";
               } else {
-                element.active = ""
+                element.likes -= 1;
+                element.active = "";
               }
             }
           }
@@ -98,7 +100,7 @@
           <div class="comment-footer">
             <div class="likes">
               <span class="likes-counter">${user.likes}</span>
-              <button date-index="${index - 1}" class="like-button ${user.active}"></button>
+              <button data-index="${index}" class="like-button ${user.active}"></button>
             </div>
           </div>
         </li>`;
@@ -144,7 +146,7 @@
         date:`${formattedDate}`,
         likes: 0,
         active: "",
-        index: everyUser.length - 1
+        index: everyUser.length
       })
       renderStudents();
     })
