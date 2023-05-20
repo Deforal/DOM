@@ -12,12 +12,23 @@
         
       </ul>
       <div class="add-form">
+        <p>Автор:</p>
         <input
           type="text"
           class="add-form-name"
           placeholder="Введите ваше имя"
           id="name_for_comment"
         />
+        <p>Цитата:</p>
+        <div class="quote_placeholder">
+          <textarea 
+            class="quote_placeholder_textarea" 
+            style="overflow: hidden;" 
+            disabled="yes">
+          </textarea>
+          <button class="quote_placeholder_clear">Очистить</button>
+        </div>
+        <p>Комментарий:</p>
         <textarea
           type="textarea"
           class="add-form-text"
@@ -38,7 +49,12 @@
     const nameInput = document.getElementById("name_for_comment");
     const commentItself = document.getElementById("comment_area");
     const newList = document.getElementById("list_wrapper");
-
+    const quotePlaceholder = document.querySelector(".quote_placeholder_textarea")
+    console.log(quotePlaceholder.value);
+    const clearButton = document.querySelector(".quote_placeholder_clear")
+    clearButton.addEventListener("click", () => {
+      quotePlaceholder.value = "";
+    })
     const everyUser = [
       {
         name: "Глеб Фокин",
@@ -46,7 +62,8 @@
         date: "12.02.22 12:18",
         likes: 3,
         active: "",
-        index: 0
+        index: 0,
+        quote: ''
       },
 
       {
@@ -55,15 +72,18 @@
         date: "13.02.22 19:22",
         likes: 75,
         active: "-active-like",
-        index: 1
+        index: 1,
+        quote: ''
       }
     ]
+
+    
 
     const inLikeButtonListeners = () => {
       const likeButtonElements = document.querySelectorAll(".like-button");
       for (const likeButtonElement of likeButtonElements) {
         likeButtonElement.addEventListener("click", () => {
-          console.log(everyUser);
+          
           const index = Number(likeButtonElement.dataset.index);
           for (const element of everyUser) {
             if (element.index === index) {
@@ -81,13 +101,31 @@
         });
       }
     };
+    const commentReply = () => {
+      const commentReplyElements = document.querySelectorAll(".comment");
+      for (const commentReplyElement of commentReplyElements) {
+        commentReplyElement.addEventListener("click", () => {
+          const index = Number(commentReplyElement.dataset.index);
+          for (const element of everyUser) {
+            if (element.index === index) {
+              const textarea = document.querySelector(".quote_placeholder_textarea")
+              console.log(textarea);
+              textarea.value = element.comment
+            }
+          }
+          
+          renderStudents();
+        });
+      }
+    };
 
     const renderStudents = () => {
       const everyComment = everyUser
       
         .map((user, index) => {
-          return `
-        <li class="comment">
+          if (user.quote === "") {
+            return `
+        <li class="comment" data-index="${index}">
           <div class="comment-header">
             <div>${user.name}</div>
             <div>${user.date}</div>
@@ -104,16 +142,41 @@
             </div>
           </div>
         </li>`;
+          } else {
+          return `
+        <li class="comment" data-index="${index}">
+          <div class="comment-header">
+            <div>${user.name}</div>
+            <div>${user.date}</div>
+          </div>
+          <div class="comment-body">
+            <div class="comment-quote quote_background">
+              ${user.quote}
+            </div>
+            <div class="comment-text">
+              ${user.comment}
+            </div>
+          </div>
+          <div class="comment-footer">
+            <div class="likes">
+              <span class="likes-counter">${user.likes}</span>
+              <button data-index="${index}" class="like-button ${user.active}"></button>
+            </div>
+          </div>
+        </li>`;
+          };
         })
         .join("");
       newList.innerHTML = everyComment;
 
       inLikeButtonListeners()
+      commentReply()
     };
     
     renderStudents();
 
     buttonWrite.addEventListener("click", () => {
+      const textarea = document.querySelector(".quote_placeholder_textarea")
       nameInput.classList.remove("error")
       commentItself.classList.remove("error")
       if ((nameInput.value === '') && (commentItself.value === '')) {
@@ -137,20 +200,22 @@
         hour: "numeric",
         minute: "numeric"
       });
-      formattedDate = formattedDate.replace('/', '.')
-      formattedDate = formattedDate.replace('/', '.')
-      formattedDate = formattedDate.replace(',', '')
+      formattedDate = formattedDate.replaceAll('/', '.');
+      formattedDate = formattedDate.replaceAll(',', '');
       everyUser.push({
         name: `${nameInput.value}`,
         comment: `${commentItself.value}`,
         date:`${formattedDate}`,
         likes: 0,
         active: "",
-        index: everyUser.length
+        index: everyUser.length,
+        quote: textarea.value
       })
       renderStudents();
+      nameInput.value = "";
+      quotePlaceholder.value = "";
+      commentItself.value = "";
     })
-    console.log(everyUser[1].active);
     console.log("It works!");
   </script>
 </html>
