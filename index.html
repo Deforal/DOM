@@ -83,7 +83,7 @@
       const likeButtonElements = document.querySelectorAll(".like-button");
       for (const likeButtonElement of likeButtonElements) {
         likeButtonElement.addEventListener("click", () => {
-          
+          event.stopPropagation()
           const index = Number(likeButtonElement.dataset.index);
           for (const element of everyUser) {
             if (element.index === index) {
@@ -177,6 +177,10 @@
 
     buttonWrite.addEventListener("click", () => {
       const textarea = document.querySelector(".quote_placeholder_textarea")
+      nameInput.value = nameInput.value.replaceAll("<", "&lt")
+      nameInput.value = nameInput.value.replaceAll(">", "&gt")
+      commentItself.value = commentItself.value.replaceAll("<", "&lt")
+      commentItself.value = commentItself.value.replaceAll(">", "&gt")
       nameInput.classList.remove("error")
       commentItself.classList.remove("error")
       if ((nameInput.value === '') && (commentItself.value === '')) {
