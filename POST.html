@@ -52,6 +52,9 @@
     const newList = document.getElementById("list_wrapper");
     const quotePlaceholder = document.querySelector(".quote_placeholder_textarea")
     const quotePlaceholder_divs = document.querySelectorAll(".quote_placeholder")
+    let stringifyArr = ""
+    let stringifyName
+    const randArr = [];
     let userOfQuote = '';
     console.log(quotePlaceholder_divs);
     quotePlaceholder.value = "";
@@ -86,11 +89,11 @@
         quote: ''
       }
     ]
+    everyUser = []
 
-    
     const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
       method: "GET"
-    });
+      });
 
     fetchPromise.then((response) => {
       // Запускаем преобразовываем "сырые" данные от API в json формат
@@ -99,13 +102,52 @@
       // Подписываемся на результат преобразования
       jsonPromise.then((responseData) => {
         // получили данные и рендерим их в приложении
-        everyUser = responseData.comments;
-        console.log(everyUser);
+        console.log(responseData);
+        for (let index = 0; index < responseData.comments.length; index++) {
+          const randArr1 = [
+          {
+            name: "",
+            comment: "",
+            date: "",
+            likes: 3,
+            active: "",
+            index: 0,
+            quote: ""
+          }
+          ]
+          let DATE = new Date(Date.parse(responseData.comments[index].date))
+          let formattedDate = DATE.toLocaleString("en-GB", {
+            week: "numeric",
+            day: "numeric",
+            month: "numeric",
+            year: "2-digit",
+            hour: "numeric",
+            minute: "numeric"
+          });
+          formattedDate = formattedDate.replaceAll('/', '.');
+          formattedDate = formattedDate.replaceAll(',', '');
+          randArr1[0].name = responseData.comments[index].author.name
+          randArr1[0].comment = responseData.comments[index].text
+          randArr1[0].date = formattedDate
+          randArr1[0].likes = responseData.comments[index].likes
+          randArr1[0].index = everyUser.length
+          randArr1[0].quote = responseData.comments[index].quote
+          if (Number(responseData.comments[index].isLiked) === 1) {
+            randArr1[0].active = "-active-like";
+          } else {
+            randArr1[0].active = "";
+          }
+          if (String(responseData.comments[index].quote) === String(undefined)) {
+            console.log("no quote");
+            randArr1[0].quote = ""
+          }
+          randArr.push(randArr1[0])
+        }
+        console.log(randArr);
+        everyUser = randArr
         renderStudents();
       });
-    });
-
-
+      });
 
     const inLikeButtonListeners = () => {
       const likeButtonElements = document.querySelectorAll(".like-button");
@@ -113,14 +155,14 @@
         likeButtonElement.addEventListener("click", () => {
           event.stopPropagation()
           const index = Number(likeButtonElement.dataset.index);
-          for (const element of everyUser) {
-            if (element.index === index) {
-              if (element.active === "") {
-                element.likes += 1;
-                element.active = "-active-like";
+          for (let index1 = 0; index1 < everyUser.length; index1++) {
+            if (everyUser[index1].index === index) {
+              if (everyUser[index1].active === "") {
+                everyUser[index1].likes += 1;
+                everyUser[index1].active = "-active-like";
               } else {
-                element.likes -= 1;
-                element.active = "";
+                everyUser[index1].likes -= 1;
+                everyUser[index1].active = "";
               }
             }
           }
@@ -136,11 +178,11 @@
         commentReplyElement.addEventListener("click", () => {
           event.stopPropagation()
           const index = Number(commentReplyElement.dataset.index);
-          for (const element of everyUser) {
-            if (element.index === index) {
+          for (let index1 = 0; index1 < everyUser.length; index1++) {
+            if (everyUser[index1].index === index) {
               const textarea = document.querySelector(".quote_placeholder_textarea");
-              textarea.value = element.comment;
-              userOfQuote = element.name;
+              textarea.value = everyUser[index1].comment;
+              userOfQuote = everyUser[index1].name;
               for (const element of quotePlaceholder_divs) {
                 element.classList.remove("display_none")
               }
@@ -155,13 +197,22 @@
       const deleteButtonsDivs = document.querySelectorAll(".delete")
       for (const deleteButton of deleteButtonsDivs) {
         deleteButton.addEventListener("click", () => {
-          everyUser.splice(deleteButton.dataset.index, 1)
+          fetch("https://webdev-hw-api.vercel.app/api/todos/" + id, {
+            method: "DELETE"
+          }).then((response) => {
+            response.json().then((responseData) => {
+              // получили данные и рендерим их в приложении
+              tasks = responseData.todos;
+              renderStudents();
+            });
+          });
           renderStudents();
         })
       }
     }
 
     const renderStudents = () => {
+      console.log("!");
       const everyComment = everyUser
         .map((user, index) => {
           if ((user.quote !== "") && (user.index > 1)) {
@@ -275,25 +326,30 @@
       formattedDate = formattedDate.replaceAll('/', '.');
       formattedDate = formattedDate.replaceAll(',', '');
       if (textarea.value === "") {
-        everyUser.push({
-        name: `${nameInput.value}`,
-        comment: `${commentItself.value}`,
+        stringifyName = JSON.stringify({
+          name: `${nameInput.value}`
+        })
+        stringifyArr = (JSON.stringify({
+        text: `${commentItself.value}`,
         date:`${formattedDate}`,
         likes: 0,
-        active: "",
-        index: everyUser.length,
-        quote: ""})
+        isLiked: "",
+        id: everyUser.length,
+        quote: ""}))
       } else { 
-        everyUser.push({
-        name: `${nameInput.value}`,
-        comment: `${commentItself.value}`,
+        stringifyName = JSON.stringify({
+          name: `${nameInput.value}`
+        })
+        stringifyArr = (JSON.stringify({
+        text: `${commentItself.value}`,
         date:`${formattedDate}`,
         likes: 0,
-        active: "",
-        index: everyUser.length,
+        isLiked: "",
+        id: everyUser.length,
         quote: textarea.value + `- ${userOfQuote}`
-      })
+      }))
       }
+      console.log(stringifyArr);
       let quoteValid = "";
       if (textarea.value === "") {
         quoteValid = ""
@@ -301,28 +357,61 @@
         quoteValid = textarea.value + `- ${userOfQuote}`
       }
       
-      console.log(JSON.stringify({
-        name: nameInput.value, 
-        comment: commentItself.value
-      }));
       fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
         method: "POST",
         body: JSON.stringify({
-            name: nameInput.value,
-            comment: commentItself.value,
-            date: formattedDate,
-            likes: 0,
-            active: '',
-            index: everyUser.length,
-            quote: quoteValid
-        })
+          name: stringifyName,
+          text: stringifyArr
+      })
       }).then((response) => {
         response.json().then((responseData) => {
+          console.log(responseData);
           // получили данные и рендерим их в приложении
-          everyUser = responseData.comments;
+          for (let index = 0; index < responseData.comments.length; index++) {
+          const randArr1 = [
+          {
+            name: "",
+            comment: "",
+            date: "",
+            likes: 3,
+            active: "",
+            index: 0,
+            quote: ""
+          }
+          ]
+          let DATE = new Date(Date.parse(responseData.comments[index].date))
+          let formattedDate = DATE.toLocaleString("en-GB", {
+            week: "numeric",
+            day: "numeric",
+            month: "numeric",
+            year: "2-digit",
+            hour: "numeric",
+            minute: "numeric"
+          });
+          formattedDate = formattedDate.replaceAll('/', '.');
+          formattedDate = formattedDate.replaceAll(',', '');
+          randArr1[0].name = responseData.comments[index].author.name
+          randArr1[0].comment = responseData.comments[index].text
+          randArr1[0].date = formattedDate
+          randArr1[0].likes = responseData.comments[index].likes
+          randArr1[0].index = everyUser.length
+          randArr1[0].quote = responseData.comments[index].quote
+          if (Number(responseData.comments[index].isLiked) === 1) {
+            randArr1[0].active = "-active-like";
+          } else {
+            randArr1[0].active = "";
+          }
+          if (String(responseData.comments[index].quote) === String(undefined)) {
+            console.log("no quote");
+            randArr1[0].quote = ""
+          }
+          randArr.push(randArr1[0])
+        }
+        console.log(randArr);
+        everyUser = randArr
         });
-      });
-
+    });
+      
 
       renderStudents();
       nameInput.value = "";
