@@ -58,7 +58,7 @@
     let userOfQuote = '';
     console.log(quotePlaceholder_divs);
     quotePlaceholder.value = "";
-
+    let uneditedARR = [];
     const clearButton = document.querySelector(".quote_placeholder_clear")
     clearButton.addEventListener("click", () => {
       quotePlaceholder.value = "";
@@ -91,19 +91,8 @@
     ]
     everyUser = []
 
-    const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
-      method: "GET"
-      });
-
-    fetchPromise.then((response) => {
-      // Запускаем преобразовываем "сырые" данные от API в json формат
-      const jsonPromise = response.json();
-
-      // Подписываемся на результат преобразования
-      jsonPromise.then((responseData) => {
-        // получили данные и рендерим их в приложении
-        console.log(responseData);
-        for (let index = 0; index < responseData.comments.length; index++) {
+    function renderGET(responseData) {
+      for (let index = 0; index < 1; index++) {
           const randArr1 = [
           {
             name: "",
@@ -143,9 +132,64 @@
           }
           randArr.push(randArr1[0])
         }
+        let newwArr = responseData.comments
+        uneditedARR = newwArr
+        console.log("@@");
+        console.log(newwArr);
+        for (let index = 1; index < newwArr.length; index++) {
+          const randArr1 = [
+          {
+            name: "",
+            comment: "",
+            date: "",
+            likes: 3,
+            active: "",
+            index: 0,
+            quote: ""
+          }
+          ]
+          const element = newwArr[index];
+          console.log(element);
+          const author = JSON.parse(element.author.name).name
+          console.log(author);
+          const info = JSON.parse(element.text)
+          console.log("info");
+          console.log(info);
+          randArr1[0].name = author
+          randArr1[0].comment = info.text
+          randArr1[0].date = info.date
+          randArr1[0].active = info.isLiked
+          randArr1[0].likes = info.likes
+          randArr1[0].index = randArr.length
+          randArr1[0].quote = info.quote
+          
+          if (String(randArr1[0].quote) === String(undefined)) {
+            console.log("no quote");
+            randArr1[0].quote = ""
+          }
+          console.log(randArr1);
+          randArr.push(randArr1[0])
+        }
         console.log(randArr);
         everyUser = randArr
+        console.log("evry usr");
+        console.log(everyUser);
         renderStudents();
+    }
+    const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
+      method: "GET"
+      });
+
+    fetchPromise.then((response) => {
+      
+      // Запускаем преобразовываем "сырые" данные от API в json формат
+      const jsonPromise = response.json();
+      // Подписываемся на результат преобразования
+      jsonPromise.then((responseData) => {
+        console.log('response');
+        console.log(responseData);
+        // получили данные и рендерим их в приложении      
+        renderGET(responseData)
       });
       });
 
@@ -197,13 +241,14 @@
       const deleteButtonsDivs = document.querySelectorAll(".delete")
       for (const deleteButton of deleteButtonsDivs) {
         deleteButton.addEventListener("click", () => {
-          fetch("https://webdev-hw-api.vercel.app/api/todos/" + id, {
+          let id = deleteButton.dataset.index
+          console.log(id);
+          fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments" + id, {
             method: "DELETE"
           }).then((response) => {
             response.json().then((responseData) => {
               // получили данные и рендерим их в приложении
-              tasks = responseData.todos;
-              renderStudents();
+              renderGET(responseData)
             });
           });
           renderStudents();
@@ -215,7 +260,8 @@
       console.log("!");
       const everyComment = everyUser
         .map((user, index) => {
-          if ((user.quote !== "") && (user.index > 1)) {
+          if ((user.quote !== "") && (index >= 1)) {
+            console.log(`${index} first option`);
             return `
             <li class="comment" data-index="${index}">
               <div class="comment-header">
@@ -231,7 +277,7 @@
                 </div>
               </div>
               <div class="comment-footer">
-                <div class="delete" data-index="${index}">
+                <div class="delete" data-index="${uneditedARR[index].id}">
                   <svg style="color: white" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"> <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" fill="white"></path> <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" fill="white"></path> </svg>
                 </div>
                 <div class="likes">
@@ -240,26 +286,8 @@
                 </div>
               </div>
             </li>`;
-          } else if (user.index <= 1) {
-            return `
-            <li class="comment" data-index="${index}">
-              <div class="comment-header">
-                <div>${user.name}</div>
-                <div>${user.date}</div>
-              </div>
-              <div class="comment-body">
-                <div class="comment-text">
-                  ${user.comment}
-                </div>
-              </div>
-              <div class="comment-footer_old">
-                <div class="likes">
-                  <span class="likes-counter">${user.likes}</span>
-                  <button data-index="${index}" class="like-button ${user.active}"></button>
-                </div>
-              </div>
-            </li>`;
-          } else if (user.quote === "") {
+          } else if (index < 1) {
+            console.log(`${index} second option`);
             return `
             <li class="comment" data-index="${index}">
               <div class="comment-header">
@@ -272,7 +300,27 @@
                 </div>
               </div>
               <div class="comment-footer">
-                <div class="delete" data-index="${index}">
+                <div class="likes_noDelete">
+                  <span class="likes-counter">${user.likes}</span>
+                  <button data-index="${index}" class="like-button ${user.active}"></button>
+                </div>
+              </div>
+            </li>`;
+          } else if (user.quote === "") {
+            console.log(`${index} third option`);
+            return `
+            <li class="comment" data-index="${index}">
+              <div class="comment-header">
+                <div>${user.name}</div>
+                <div>${user.date}</div>
+              </div>
+              <div class="comment-body">
+                <div class="comment-text">
+                  ${user.comment}
+                </div>
+              </div>
+              <div class="comment-footer">
+                <div class="delete" data-index="${uneditedARR[index].id}">
                   <svg style="color: white" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"> <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" fill="white"></path> <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" fill="white"></path> </svg>
                 </div>
                 <div class="likes">
@@ -364,51 +412,10 @@
           text: stringifyArr
       })
       }).then((response) => {
+        console.log(response);
         response.json().then((responseData) => {
           console.log(responseData);
-          // получили данные и рендерим их в приложении
-          for (let index = 0; index < responseData.comments.length; index++) {
-          const randArr1 = [
-          {
-            name: "",
-            comment: "",
-            date: "",
-            likes: 3,
-            active: "",
-            index: 0,
-            quote: ""
-          }
-          ]
-          let DATE = new Date(Date.parse(responseData.comments[index].date))
-          let formattedDate = DATE.toLocaleString("en-GB", {
-            week: "numeric",
-            day: "numeric",
-            month: "numeric",
-            year: "2-digit",
-            hour: "numeric",
-            minute: "numeric"
-          });
-          formattedDate = formattedDate.replaceAll('/', '.');
-          formattedDate = formattedDate.replaceAll(',', '');
-          randArr1[0].name = responseData.comments[index].author.name
-          randArr1[0].comment = responseData.comments[index].text
-          randArr1[0].date = formattedDate
-          randArr1[0].likes = responseData.comments[index].likes
-          randArr1[0].index = everyUser.length
-          randArr1[0].quote = responseData.comments[index].quote
-          if (Number(responseData.comments[index].isLiked) === 1) {
-            randArr1[0].active = "-active-like";
-          } else {
-            randArr1[0].active = "";
-          }
-          if (String(responseData.comments[index].quote) === String(undefined)) {
-            console.log("no quote");
-            randArr1[0].quote = ""
-          }
-          randArr.push(randArr1[0])
-        }
-        console.log(randArr);
-        everyUser = randArr
+          renderGET(responseData)
         });
     });
       

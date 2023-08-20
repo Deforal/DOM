@@ -100,6 +100,13 @@ body {
   justify-content: space-between;
 }
 
+.likes_noDelete {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+}
+
 .comment-footer_old {
   display: flex;
   justify-content: flex-end;
