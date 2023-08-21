@@ -92,6 +92,7 @@
     everyUser = []
 
     function renderGET(responseData) {
+      randArr.length = 0
       for (let index = 0; index < 1; index++) {
           const randArr1 = [
           {
@@ -243,7 +244,7 @@
         deleteButton.addEventListener("click", () => {
           let id = deleteButton.dataset.index
           console.log(id);
-          fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments" + id, {
+          fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments/" + id, {
             method: "DELETE"
           }).then((response) => {
             response.json().then((responseData) => {
@@ -411,14 +412,27 @@
           name: stringifyName,
           text: stringifyArr
       })
-      }).then((response) => {
-        console.log(response);
-        response.json().then((responseData) => {
-          console.log(responseData);
-          renderGET(responseData)
-        });
-    });
+      })
       
+
+    const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
+      method: "GET"
+      });
+
+    fetchPromise.then((response) => {
+      
+      // Запускаем преобразовываем "сырые" данные от API в json формат
+      const jsonPromise = response.json();
+      
+      // Подписываемся на результат преобразования
+      jsonPromise.then((responseData) => {
+        console.log('response');
+        console.log(responseData);
+        // получили данные и рендерим их в приложении      
+        renderGET(responseData)
+      });
+      });
+
 
       renderStudents();
       nameInput.value = "";
