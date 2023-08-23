@@ -93,13 +93,15 @@
 
     function renderGET(responseData) {
       randArr.length = 0
-      for (let index = 0; index < 1; index++) {
+      let newwArr = responseData.comments
+      console.log(newwArr);
+      for (let index = 0; index < newwArr.length; index++) {
           const randArr1 = [
           {
             name: "",
             comment: "",
             date: "",
-            likes: 3,
+            likes: 0,
             active: "",
             index: 0,
             quote: ""
@@ -114,67 +116,33 @@
             hour: "numeric",
             minute: "numeric"
           });
+          
+          let comment = responseData.comments[index].text;
+          console.log("@@@");
+          console.log(comment);
+          comment = comment.split('|||')
           formattedDate = formattedDate.replaceAll('/', '.');
           formattedDate = formattedDate.replaceAll(',', '');
           randArr1[0].name = responseData.comments[index].author.name
-          randArr1[0].comment = responseData.comments[index].text
+          randArr1[0].comment = comment[0]
           randArr1[0].date = formattedDate
           randArr1[0].likes = responseData.comments[index].likes
-          randArr1[0].index = everyUser.length
-          randArr1[0].quote = responseData.comments[index].quote
+          randArr1[0].index = randArr.length
+          randArr1[0].quote = comment[1]
           if (Number(responseData.comments[index].isLiked) === 1) {
             randArr1[0].active = "-active-like";
           } else {
             randArr1[0].active = "";
           }
-          if (String(responseData.comments[index].quote) === String(undefined)) {
+          if (String(comment[1]) === String(undefined)) {
             console.log("no quote");
             randArr1[0].quote = ""
           }
           randArr.push(randArr1[0])
         }
-        let newwArr = responseData.comments
         uneditedARR = newwArr
-        console.log("@@");
-        console.log(newwArr);
-        for (let index = 1; index < newwArr.length; index++) {
-          const randArr1 = [
-          {
-            name: "",
-            comment: "",
-            date: "",
-            likes: 3,
-            active: "",
-            index: 0,
-            quote: ""
-          }
-          ]
-          const element = newwArr[index];
-          console.log(element);
-          const author = JSON.parse(element.author.name).name
-          console.log(author);
-          const info = JSON.parse(element.text)
-          console.log("info");
-          console.log(info);
-          randArr1[0].name = author
-          randArr1[0].comment = info.text
-          randArr1[0].date = info.date
-          randArr1[0].active = info.isLiked
-          randArr1[0].likes = info.likes
-          randArr1[0].index = randArr.length
-          randArr1[0].quote = info.quote
-          
-          if (String(randArr1[0].quote) === String(undefined)) {
-            console.log("no quote");
-            randArr1[0].quote = ""
-          }
-          console.log(randArr1);
-          randArr.push(randArr1[0])
-        }
-        console.log(randArr);
+        
         everyUser = randArr
-        console.log("evry usr");
-        console.log(everyUser);
         renderStudents();
     }
     const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
@@ -242,11 +210,12 @@
       const deleteButtonsDivs = document.querySelectorAll(".delete")
       for (const deleteButton of deleteButtonsDivs) {
         deleteButton.addEventListener("click", () => {
-          let id = deleteButton.dataset.index
+          event.stopPropagation()
+          let id = Number(deleteButton.dataset.index)
           console.log(id);
-          fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments/" + id, {
-            method: "DELETE"
-          }).then((response) => {
+          fetch ('https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments/' + id, {
+          method: 'DELETE' 
+        }).then((response) => {
             response.json().then((responseData) => {
               // получили данные и рендерим их в приложении
               renderGET(responseData)
@@ -375,28 +344,11 @@
       formattedDate = formattedDate.replaceAll('/', '.');
       formattedDate = formattedDate.replaceAll(',', '');
       if (textarea.value === "") {
-        stringifyName = JSON.stringify({
-          name: `${nameInput.value}`
-        })
-        stringifyArr = (JSON.stringify({
-        text: `${commentItself.value}`,
-        date:`${formattedDate}`,
-        likes: 0,
-        isLiked: "",
-        id: everyUser.length,
-        quote: ""}))
+        stringifyName = `${nameInput.value}`
+        stringifyArr = `${commentItself.value}` 
       } else { 
-        stringifyName = JSON.stringify({
-          name: `${nameInput.value}`
-        })
-        stringifyArr = (JSON.stringify({
-        text: `${commentItself.value}`,
-        date:`${formattedDate}`,
-        likes: 0,
-        isLiked: "",
-        id: everyUser.length,
-        quote: textarea.value + `- ${userOfQuote}`
-      }))
+        stringifyName = `${nameInput.value}`
+        stringifyArr = `${commentItself.value}` + `|||` + `${textarea.value} - ${userOfQuote}`
       }
       console.log(stringifyArr);
       let quoteValid = "";
