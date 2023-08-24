@@ -344,8 +344,7 @@
       buttonWrite.disabled = true;
       buttonWrite.textContent = "Загрузка."
 
-      function interval() {
-        setInterval(() => {
+        const intervalDD = setInterval(function() {
           console.log("smth");
           if (String(buttonWrite.textContent) === "Загрузка.") {
             buttonWrite.textContent = "Загрузка.."
@@ -358,9 +357,8 @@
             console.log("3");
           }
         }, 500);
-      } 
       
-      interval()
+      console.log(stringifyArr, stringifyName);
 
       fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
         method: "POST",
@@ -378,12 +376,11 @@
       })
       .then((responseData) => {
         renderGET(responseData)
-        clearInterval(interval)
+        clearInterval(intervalDD)
         buttonWrite.disabled = false;
         buttonWrite.textContent = "Написать"
       })
     })
-
       renderStudents();
       nameInput.value = "";
       quotePlaceholder.value = "";
