@@ -56,7 +56,6 @@
     let stringifyName
     const randArr = [];
     let userOfQuote = '';
-    console.log(quotePlaceholder_divs);
     quotePlaceholder.value = "";
     let uneditedARR = [];
     const clearButton = document.querySelector(".quote_placeholder_clear")
@@ -94,7 +93,6 @@
     function renderGET(responseData) {
       randArr.length = 0
       let newwArr = responseData.comments
-      console.log(newwArr);
       for (let index = 0; index < newwArr.length; index++) {
           const randArr1 = [
           {
@@ -118,8 +116,6 @@
           });
           
           let comment = responseData.comments[index].text;
-          console.log("@@@");
-          console.log(comment);
           comment = comment.split('|||')
           formattedDate = formattedDate.replaceAll('/', '.');
           formattedDate = formattedDate.replaceAll(',', '');
@@ -135,32 +131,23 @@
             randArr1[0].active = "";
           }
           if (String(comment[1]) === String(undefined)) {
-            console.log("no quote");
             randArr1[0].quote = ""
           }
           randArr.push(randArr1[0])
         }
         uneditedARR = newwArr
-        
         everyUser = randArr
         renderStudents();
     }
-    const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
+    fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
       method: "GET"
-      });
-
-    fetchPromise.then((response) => {
-      
-      // Запускаем преобразовываем "сырые" данные от API в json формат
-      const jsonPromise = response.json();
-      // Подписываемся на результат преобразования
-      jsonPromise.then((responseData) => {
-        console.log('response');
-        console.log(responseData);
-        // получили данные и рендерим их в приложении      
+    })
+    .then((response) => {
+      return response.json();
+    })
+    .then((responseData) => {  
         renderGET(responseData)
-      });
-      });
+    });
 
     const inLikeButtonListeners = () => {
       const likeButtonElements = document.querySelectorAll(".like-button");
@@ -210,28 +197,27 @@
       const deleteButtonsDivs = document.querySelectorAll(".delete")
       for (const deleteButton of deleteButtonsDivs) {
         deleteButton.addEventListener("click", () => {
+          console.log("Element is in work!");
           event.stopPropagation()
           let id = Number(deleteButton.dataset.index)
-          console.log(id);
           fetch ('https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments/' + id, {
-          method: 'DELETE' 
-        }).then((response) => {
-            response.json().then((responseData) => {
-              // получили данные и рендерим их в приложении
-              renderGET(responseData)
-            });
-          });
+            method: 'DELETE' 
+          })
+          .then((response) => {
+            return response.json();
+          })
+          .then((responseData) => {
+            renderGET(responseData)
+        });
           renderStudents();
         })
       }
     }
 
     const renderStudents = () => {
-      console.log("!");
       const everyComment = everyUser
         .map((user, index) => {
           if ((user.quote !== "") && (index >= 1)) {
-            console.log(`${index} first option`);
             return `
             <li class="comment" data-index="${index}">
               <div class="comment-header">
@@ -257,7 +243,6 @@
               </div>
             </li>`;
           } else if (index < 1) {
-            console.log(`${index} second option`);
             return `
             <li class="comment" data-index="${index}">
               <div class="comment-header">
@@ -277,7 +262,6 @@
               </div>
             </li>`;
           } else if (user.quote === "") {
-            console.log(`${index} third option`);
             return `
             <li class="comment" data-index="${index}">
               <div class="comment-header">
@@ -350,7 +334,6 @@
         stringifyName = `${nameInput.value}`
         stringifyArr = `${commentItself.value}` + `|||` + `${textarea.value} - ${userOfQuote}`
       }
-      console.log(stringifyArr);
       let quoteValid = "";
       if (textarea.value === "") {
         quoteValid = ""
@@ -358,33 +341,48 @@
         quoteValid = textarea.value + `- ${userOfQuote}`
       }
       
+      buttonWrite.disabled = true;
+      buttonWrite.textContent = "Загрузка."
+
+      function interval() {
+        setInterval(() => {
+          console.log("smth");
+          if (String(buttonWrite.textContent) === "Загрузка.") {
+            buttonWrite.textContent = "Загрузка.."
+            console.log("1");
+          } else if (String(buttonWrite.textContent) === "Загрузка..") {
+            buttonWrite.textContent = "Загрузка..."
+            console.log("2");
+          } else if (String(buttonWrite.textContent) === "Загрузка...") {
+            buttonWrite.textContent = "Загрузка."
+            console.log("3");
+          }
+        }, 500);
+      } 
+      
+      interval()
+
       fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
         method: "POST",
         body: JSON.stringify({
           name: stringifyName,
           text: stringifyArr
+        })
       })
+      .then((response) => {
+      const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
+        method: "GET"
       })
-      
-
-    const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
-      method: "GET"
-      });
-
-    fetchPromise.then((response) => {
-      
-      // Запускаем преобразовываем "сырые" данные от API в json формат
-      const jsonPromise = response.json();
-      
-      // Подписываемся на результат преобразования
-      jsonPromise.then((responseData) => {
-        console.log('response');
-        console.log(responseData);
-        // получили данные и рендерим их в приложении      
+      .then((response) => {
+        return response.json(); 
+      })
+      .then((responseData) => {
         renderGET(responseData)
-      });
-      });
-
+        clearInterval(interval)
+        buttonWrite.disabled = false;
+        buttonWrite.textContent = "Написать"
+      })
+    })
 
       renderStudents();
       nameInput.value = "";
