@@ -368,8 +368,9 @@
         })
       })
       .then((response) => {
-      const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
-        method: "GET"
+        const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
+          method: "GET"
+        })
       })
       .then((response) => {
         return response.json(); 
@@ -377,24 +378,31 @@
       .then((responseData) => {
         renderGET(responseData)
         clearInterval(intervalDD)
+        alert("Добавлен комментарий")
         buttonWrite.disabled = false;
         buttonWrite.textContent = "Написать"
-      })
-    })
-      renderStudents();
-      nameInput.value = "";
-      quotePlaceholder.value = "";
-      userOfQuote = "";
-      for (const element of quotePlaceholder_divs) {
+        nameInput.value = "";
+        quotePlaceholder.value = "";
+        userOfQuote = "";
+        for (const element of quotePlaceholder_divs) {
         element.classList.add("display_none")
-      }
-      commentItself.value = "";
+        }
+        commentItself.value = "";
+      })
+      .catch ((error) =>{
+        buttonWrite.disabled = false;
+        buttonWrite.textContent = "Написать"
+        alert("Что-то пошло не так")
+        clearInterval(intervalDD)
+        console.log(error);
+      })
+    
+      renderStudents();
+      
+      
     })
 
-    for (const smthgg of everyUser) {
-    }
-    let tasks = [];
-    let newT = everyUser.map(item => JSON.stringify(item))
+    
     
   </script>
 </html>
