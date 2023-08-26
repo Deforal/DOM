@@ -11,6 +11,9 @@
       <ul class="comments" id="list_wrapper">
         
       </ul>
+      <div class="loader display_none">
+        Загрузка...
+      </div>
       <div class="add-form">
         <p>Автор:</p>
         <input
@@ -343,24 +346,14 @@
       
       buttonWrite.disabled = true;
       buttonWrite.textContent = "Загрузка."
-
-        const intervalDD = setInterval(function() {
-          console.log("smth");
-          if (String(buttonWrite.textContent) === "Загрузка.") {
-            buttonWrite.textContent = "Загрузка.."
-            console.log("1");
-          } else if (String(buttonWrite.textContent) === "Загрузка..") {
-            buttonWrite.textContent = "Загрузка..."
-            console.log("2");
-          } else if (String(buttonWrite.textContent) === "Загрузка...") {
-            buttonWrite.textContent = "Загрузка."
-            console.log("3");
-          }
-        }, 500);
-
-
+      const formAdder = document.querySelector(".add-form")
+      const loader = document.querySelector(".loader")
+      loader.textContent.replaceAll(" ", "")
+      console.log(loader);
+      console.log(formAdder);
+        
       let ErrorNumber = 0
-      fetch("https://wedev-api.sky.pro/api/v1/egor-epifancev/comments", {
+      fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
         method: "POST",
         body: JSON.stringify({
           name: stringifyName,
@@ -368,6 +361,9 @@
         })
       })
       .then((response) => {
+        console.log("first");
+        formAdder.classList.add("display_none")
+        loader.classList.remove("display_none")
         console.log(response.status);
         if (response.status === 400) {
           console.log("1");
@@ -378,11 +374,13 @@
           ErrorNumber = 500
           throw new Error("500")
         }
-        const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/egor-epifancev/comments", {
+        
+      })
+      const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
           method: "GET"
-        })
       })
       .then((response) => {
+        console.log("second");
         if ((response.status === 201) || (response.status === 200)){
           return response.json(); 
         } else {
@@ -391,8 +389,9 @@
         
       })
       .then((responseData) => {
+        formAdder.classList.remove("display_none")
+        loader.classList.add("display_none")
         renderGET(responseData)
-        clearInterval(intervalDD)
         alert("Добавлен комментарий")
         buttonWrite.disabled = false;
         buttonWrite.textContent = "Написать"
@@ -400,12 +399,12 @@
         quotePlaceholder.value = "";
         userOfQuote = "";
         for (const element of quotePlaceholder_divs) {
-        element.classList.add("display_none")
+          element.classList.add("display_none")
         }
         commentItself.value = "";
       })
       .catch ((error) =>{
-        console.log("smth");
+        console.log(error);
         if (ErrorNumber === 400) {
           alert("Имя и комментарий должны быть длиннее 3-ех символов")
         } else {
@@ -413,15 +412,8 @@
         }
         buttonWrite.disabled = false;
         buttonWrite.textContent = "Написать"
-        clearInterval(intervalDD)
       })
-    
       renderStudents();
-      
-      
     })
-
-    
-    
   </script>
 </html>
