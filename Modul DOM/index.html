@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Проект "Комменты"</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <ul class="comments" id="list_wrapper">
+        
+      </ul>
+      <div class="add-form">
+        <p>Автор:</p>
+        <input
+          type="text"
+          class="add-form-name"
+          placeholder="Введите ваше имя"
+          id="name_for_comment"
+        />
+        <p class="display_none quote_placeholder">Цитата:</p>
+        <div class="display_none quote_placeholder">
+          <textarea 
+            class="quote_placeholder_textarea" 
+            style="overflow: hidden;" 
+            disabled="yes">
+          </textarea>
+          <button class="quote_placeholder_clear">Очистить</button>
+        </div>
+        <p>Комментарий:</p>
+        <textarea
+          type="textarea"
+          class="add-form-text"
+          placeholder="Введите ваш коментарий"
+          rows="4"
+          id="comment_area"
+        ></textarea>
+        <div class="add-form-row">
+          <button class="add-form-button" id="button_submit">Написать</button>
+        </div>
+        
+      </div>
+    </div>
+  </body>
+
+  <script>
+    "use strict";
+    const buttonWrite = document.getElementById("button_submit");
+    const nameInput = document.getElementById("name_for_comment");
+    const commentItself = document.getElementById("comment_area");
+    const newList = document.getElementById("list_wrapper");
+    console.log(newList);
+    const quotePlaceholder = document.querySelector(".quote_placeholder_textarea")
+    const quotePlaceholder_divs = document.querySelectorAll(".quote_placeholder")
+    let userOfQuote = '';
+    console.log(quotePlaceholder_divs);
+    quotePlaceholder.value = "";
+
+    const clearButton = document.querySelector(".quote_placeholder_clear")
+    clearButton.addEventListener("click", () => {
+      quotePlaceholder.value = "";
+      for (const element of quotePlaceholder_divs) {
+        element.classList.add("display_none")
+        }
+      }
+    )
+
+    const everyUser = [
+      {
+        name: "Глеб Фокин",
+        comment: "Это будет первый комментарий на этой странице",
+        date: "12.02.22 12:18",
+        likes: 3,
+        active: "",
+        index: 0,
+        quote: ''
+      },
+
+      {
+        name: "Варвара Н.",
+        comment: "Мне нравится как оформлена эта страница! ❤",
+        date: "13.02.22 19:22",
+        likes: 75,
+        active: "-active-like",
+        index: 1,
+        quote: ''
+      }
+    ]
+
+    
+
+    const inLikeButtonListeners = () => {
+      const likeButtonElements = document.querySelectorAll(".like-button");
+      for (const likeButtonElement of likeButtonElements) {
+        likeButtonElement.addEventListener("click", () => {
+          event.stopPropagation()
+          const index = Number(likeButtonElement.dataset.index);
+          for (const element of everyUser) {
+            if (element.index === index) {
+              if (element.active === "") {
+                element.likes += 1;
+                element.active = "-active-like";
+              } else {
+                element.likes -= 1;
+                element.active = "";
+              }
+            }
+          }
+          
+          renderStudents();
+        });
+      }
+    };
+
+    const commentReply = () => {
+      const commentReplyElements = document.querySelectorAll(".comment");
+      for (const commentReplyElement of commentReplyElements) {
+        commentReplyElement.addEventListener("click", () => {
+          event.stopPropagation()
+          const index = Number(commentReplyElement.dataset.index);
+          for (const element of everyUser) {
+            if (element.index === index) {
+              const textarea = document.querySelector(".quote_placeholder_textarea");
+              textarea.value = element.comment;
+              userOfQuote = element.name;
+              for (const element of quotePlaceholder_divs) {
+                element.classList.remove("display_none")
+              }
+            }
+          }
+          renderStudents();
+        });
+      }
+    };
+
+    const deleteButtons = () => {
+      const deleteButtonsDivs = document.querySelectorAll(".delete")
+      for (const deleteButton of deleteButtonsDivs) {
+        deleteButton.addEventListener("click", () => {
+          console.log(deleteButton.dataset.index);
+          everyUser.splice(deleteButton.dataset.index, 1)
+          renderStudents();
+        })
+      }
+    }
+
+    const renderStudents = () => {
+      const everyComment = everyUser.map((user, index) => {
+          if ((user.quote !== "") && (user.index > 1)) {
+            return `
+            <li class="comment" data-index="${index}">
+              <div class="comment-header">
+                <div>${user.name}</div>
+                <div>${user.date}</div>
+              </div>
+              <div class="comment-body">
+                <div class="comment-quote quote_background">
+                  ${user.quote}
+                </div>
+                <div class="comment-text">
+                  ${user.comment}
+                </div>
+              </div>
+              <div class="comment-footer">
+                <div class="delete" data-index="${index}">
+                  <svg style="color: white" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"> <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" fill="white"></path> <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" fill="white"></path> </svg>
+                </div>
+                <div class="likes">
+                  <span class="likes-counter">${user.likes}</span>
+                  <button data-index="${index}" class="like-button ${user.active}"></button>
+                </div>
+              </div>
+            </li>`;
+          } else if (user.index <= 1) {
+            return `
+            <li class="comment" data-index="${index}">
+              <div class="comment-header">
+                <div>${user.name}</div>
+                <div>${user.date}</div>
+              </div>
+              <div class="comment-body">
+                <div class="comment-text">
+                  ${user.comment}
+                </div>
+              </div>
+              <div class="comment-footer_old">
+                <div class="likes">
+                  <span class="likes-counter">${user.likes}</span>
+                  <button data-index="${index}" class="like-button ${user.active}"></button>
+                </div>
+              </div>
+            </li>`;
+          } else if (user.quote === "") {
+            return `
+            <li class="comment" data-index="${index}">
+              <div class="comment-header">
+                <div>${user.name}</div>
+                <div>${user.date}</div>
+              </div>
+              <div class="comment-body">
+                <div class="comment-text">
+                  ${user.comment}
+                </div>
+              </div>
+              <div class="comment-footer">
+                <div class="delete" data-index="${index}">
+                  <svg style="color: white" xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16"> <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" fill="white"></path> <path fill-rule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" fill="white"></path> </svg>
+                </div>
+                <div class="likes">
+                  <span class="likes-counter">${user.likes}</span>
+                  <button data-index="${index}" class="like-button ${user.active}"></button>
+                </div>
+              </div>
+            </li>`;
+          } 
+          
+        })
+        .join("");
+        console.log(everyComment);
+      newList.innerHTML = everyComment;
+
+      inLikeButtonListeners()
+      commentReply()
+      deleteButtons()
+    };
+    
+    renderStudents();
+
+    buttonWrite.addEventListener("click", () => {
+      const textarea = document.querySelector(".quote_placeholder_textarea")
+      nameInput.value = nameInput.value.replaceAll("<", "&lt")
+      nameInput.value = nameInput.value.replaceAll(">", "&gt")
+      commentItself.value = commentItself.value.replaceAll("<", "&lt")
+      commentItself.value = commentItself.value.replaceAll(">", "&gt")
+      nameInput.classList.remove("error")
+      commentItself.classList.remove("error")
+      if ((nameInput.value === '') && (commentItself.value === '')) {
+        nameInput.classList.add("error")
+        commentItself.classList.add("error")
+        return;
+      }
+      if (nameInput.value === '') {
+        nameInput.classList.add("error")
+        return;
+      }
+      if (commentItself.value === '') {
+        commentItself.classList.add("error")
+        return;
+      }
+      const date = new Date();
+      let formattedDate = date.toLocaleString("en-GB", {
+        day: "numeric",
+        month: "numeric",
+        year: "2-digit",
+        hour: "numeric",
+        minute: "numeric"
+      });
+      formattedDate = formattedDate.replaceAll('/', '.');
+      formattedDate = formattedDate.replaceAll(',', '');
+      
+      if (textarea.value === "") {
+        everyUser.push({
+        name: `${nameInput.value}`,
+        comment: `${commentItself.value}`,
+        date:`${formattedDate}`,
+        likes: 0,
+        active: "",
+        index: everyUser.length,
+        quote: ""})
+      } else { 
+        everyUser.push({
+        name: `${nameInput.value}`,
+        comment: `${commentItself.value}`,
+        date:`${formattedDate}`,
+        likes: 0,
+        active: "",
+        index: everyUser.length,
+        quote: textarea.value + `- ${userOfQuote}`
+      })
+      }
+      console.log(everyUser);
+      renderStudents();
+      nameInput.value = "";
+      quotePlaceholder.value = "";
+      userOfQuote = "";
+      for (const element of quotePlaceholder_divs) {
+        element.classList.add("display_none")
+      }
+      commentItself.value = "";
+    })
+
+    function square() {
+      return 6;
+    }
+    
+    console.log(square(2));
+
+    let arr = [1, 2, 3, 4]
+    let arrNEwww = arr.map((Chel, number) => {
+      return Chel * 2;
+    }).join("-")
+    console.log(arrNEwww);
+  </script>
+</html>
