@@ -1,3 +1,4 @@
+allVariabls()
 export const POSTfunc = () => {
     fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
         method: "POST",
@@ -61,15 +62,38 @@ export const POSTfunc = () => {
         buttonWrite.textContent = "Написать"
       })
 } 
-
-export const GETfunc = () => {
-    fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
+export function GETfunc() {
+  fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
       method: "GET"
     })
     .then((response) => {
       return response.json();
     })
-    .then((responseData) => {  
+    .then((responseData) => {
+      formAdder.classList.remove("display_none")  
+      loader.classList.add("display_none")
+      renderGET(responseData)
+  });
+}
+
+
+export function DELETEfunc() {
+  const deleteButtonsDivs = document.querySelectorAll(".delete")
+  for (const deleteButton of deleteButtonsDivs) {
+    deleteButton.addEventListener("click", () => {
+      console.log("Element is in work!");
+      event.stopPropagation()
+      let id = Number(deleteButton.dataset.index)
+      fetch ('https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments/' + id, {
+        method: 'DELETE' 
+      })
+      .then((response) => {
+        return response.json();
+      })
+      .then((responseData) => {
         renderGET(responseData)
     });
-}  
+      renderStudents();
+    })
+  }
+}

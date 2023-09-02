@@ -1,4 +1,32 @@
-export const GETfunc = (responseData) => {
+import { DELETEfunc, POSTfunc } from "./api.js";
+import { GETfunc } from "./api.js";
+"use strict";
+
+  const buttonWrite = document.getElementById("button_submit");
+  const nameInput = document.getElementById("name_for_comment");
+  const commentItself = document.getElementById("comment_area");
+  const newList = document.getElementById("list_wrapper");
+  const quotePlaceholder = document.querySelector(".quote_placeholder_textarea")
+  const quotePlaceholder_divs = document.querySelectorAll(".quote_placeholder")
+  const formAdder = document.querySelector(".add-form");
+  const loader = document.querySelector(".loader");
+  let stringifyArr = ""
+  let stringifyName
+  const randArr = [];
+  let userOfQuote = '';
+  quotePlaceholder.value = "";
+  let uneditedARR = [];
+  const clearButton = document.querySelector(".quote_placeholder_clear")
+  clearButton.addEventListener("click", () => {
+    quotePlaceholder.value = "";
+    for (const element of quotePlaceholder_divs) {
+      element.classList.add("display_none")
+      }
+    }
+  )
+
+  let everyUser = []
+  function renderGET (responseData) {
     randArr.length = 0
     let newwArr = responseData.comments
     for (let index = 0; index < newwArr.length; index++) {
@@ -48,7 +76,7 @@ export const GETfunc = (responseData) => {
       renderStudents();
   }
 
-  export const renderStudents = () => {
+const renderStudents = () => {
     const everyComment = everyUser
       .map((user, index) => {
         if ((user.quote !== "") && (index >= 1)) {
@@ -127,3 +155,114 @@ export const GETfunc = (responseData) => {
     commentReply()
     deleteButtons()
   };
+
+  GETfunc()
+
+  const inLikeButtonListeners = () => {
+    const likeButtonElements = document.querySelectorAll(".like-button");
+    for (const likeButtonElement of likeButtonElements) {
+      likeButtonElement.addEventListener("click", () => {
+        event.stopPropagation()
+        const index = Number(likeButtonElement.dataset.index);
+        for (let index1 = 0; index1 < everyUser.length; index1++) {
+          if (everyUser[index1].index === index) {
+            if (everyUser[index1].active === "") {
+              everyUser[index1].likes += 1;
+              everyUser[index1].active = "-active-like";
+            } else {
+              everyUser[index1].likes -= 1;
+              everyUser[index1].active = "";
+            }
+          }
+        }
+        
+        renderStudents();
+      });
+    }
+  };
+
+  const commentReply = () => {
+    const commentReplyElements = document.querySelectorAll(".comment");
+    for (const commentReplyElement of commentReplyElements) {
+      commentReplyElement.addEventListener("click", () => {
+        event.stopPropagation()
+        const index = Number(commentReplyElement.dataset.index);
+        for (let index1 = 0; index1 < everyUser.length; index1++) {
+          if (everyUser[index1].index === index) {
+            const textarea = document.querySelector(".quote_placeholder_textarea");
+            textarea.value = everyUser[index1].comment;
+            userOfQuote = everyUser[index1].name;
+            for (const element of quotePlaceholder_divs) {
+              element.classList.remove("display_none")
+            }
+          }
+        }
+        renderStudents();
+      });
+    }
+  };
+
+  DELETEfunc()
+
+    
+    
+    renderStudents();
+
+    buttonWrite.addEventListener("click", () => {
+      const textarea = document.querySelector(".quote_placeholder_textarea")
+      nameInput.value = nameInput.value.replaceAll("<", "&lt")
+      nameInput.value = nameInput.value.replaceAll(">", "&gt")
+      commentItself.value = commentItself.value.replaceAll("<", "&lt")
+      commentItself.value = commentItself.value.replaceAll(">", "&gt")
+      nameInput.classList.remove("error")
+      commentItself.classList.remove("error")
+      if ((nameInput.value === '') && (commentItself.value === '')) {
+        nameInput.classList.add("error")
+        commentItself.classList.add("error")
+        return;
+      }
+      if (nameInput.value === '') {
+        nameInput.classList.add("error")
+        return;
+      }
+      if (commentItself.value === '') {
+        commentItself.classList.add("error")
+        return;
+      }
+      const date = new Date();
+      let formattedDate = date.toLocaleString("en-GB", {
+        day: "numeric",
+        month: "numeric",
+        year: "2-digit",
+        hour: "numeric",
+        minute: "numeric"
+      });
+      formattedDate = formattedDate.replaceAll('/', '.');
+      formattedDate = formattedDate.replaceAll(',', '');
+      if (textarea.value === "") {
+        stringifyName = `${nameInput.value}`
+        stringifyArr = `${commentItself.value}` 
+      } else { 
+        stringifyName = `${nameInput.value}`
+        stringifyArr = `${commentItself.value}` + `|||` + `${textarea.value} - ${userOfQuote}`
+      }
+      let quoteValid = "";
+      if (textarea.value === "") {
+        quoteValid = ""
+      } else {
+        quoteValid = textarea.value + `- ${userOfQuote}`
+      }
+      
+
+      buttonWrite.disabled = true;
+      buttonWrite.textContent = "Загрузка."
+      const formAdder = document.querySelector(".add-form")
+      const loader = document.querySelector(".loader")
+      loader.textContent.replaceAll(" ", "")
+      console.log(loader);
+      console.log(formAdder);
+        
+      let ErrorNumber = 0
+      POSTfunc()
+      renderStudents();
+    })
