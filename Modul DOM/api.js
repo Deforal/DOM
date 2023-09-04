@@ -1,4 +1,3 @@
-allVariabls()
 export const POSTfunc = () => {
     fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
         method: "POST",

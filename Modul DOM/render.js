@@ -153,7 +153,7 @@ const renderStudents = () => {
 
     inLikeButtonListeners()
     commentReply()
-    deleteButtons()
+    DELETEfunc()
   };
 
   GETfunc()
