@@ -12,9 +12,12 @@
         
       </ul>
       <div class="loader">
-        Комментарий добавляется
+        Пожалуйста подождите, загрузка комментариев...
       </div>
-      <div class="add-form display_none">
+      <div class="loader_1 display_none">
+        Загрузка комментария...
+      </div>
+      <div class="add-form">
         <p>Автор:</p>
         <input
           type="text"
@@ -57,6 +60,7 @@
     const quotePlaceholder_divs = document.querySelectorAll(".quote_placeholder")
     const formAdder = document.querySelector(".add-form")
     const loader = document.querySelector(".loader")
+    const loader_1 = document.querySelector(".loader_1")
     let stringifyArr = ""
     let stringifyName
     const randArr = [];
@@ -151,7 +155,6 @@
       return response.json();
     })
     .then((responseData) => {
-      formAdder.classList.remove("display_none")  
       loader.classList.add("display_none")
       renderGET(responseData)
     });
@@ -365,7 +368,7 @@
       .then((response) => {
         console.log("first");
         formAdder.classList.add("display_none")
-        loader.classList.remove("display_none")
+        loader_1.classList.remove("display_none")
         console.log(response.status);
         if (response.status === 400) {
           console.log("1");
@@ -392,7 +395,7 @@
       })
       .then((responseData) => {
         formAdder.classList.remove("display_none")
-        loader.classList.add("display_none")
+        loader_1.classList.add("display_none")
         renderGET(responseData)
         alert("Добавлен комментарий")
         buttonWrite.disabled = false;
