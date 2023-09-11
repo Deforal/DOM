@@ -10,6 +10,7 @@ import { GETfunc } from "./api.js";
   const quotePlaceholder_divs = document.querySelectorAll(".quote_placeholder")
   const formAdder = document.querySelector(".add-form");
   const loader = document.querySelector(".loader");
+  const loader_1 = document.querySelector(".loader_1")
   let stringifyArr = ""
   let stringifyName
   const randArr = [];
