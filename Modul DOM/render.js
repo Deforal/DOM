@@ -26,7 +26,7 @@ import { GETfunc } from "./api.js";
   )
 
   let everyUser = []
-  function renderGET (responseData) {
+  export function renderGET (responseData) {
     randArr.length = 0
     let newwArr = responseData.comments
     for (let index = 0; index < newwArr.length; index++) {
@@ -262,7 +262,6 @@ const renderStudents = () => {
       console.log(loader);
       console.log(formAdder);
         
-      let ErrorNumber = 0
-      POSTfunc()
+      POSTfunc(stringifyName, stringifyArr)
       renderStudents();
     })

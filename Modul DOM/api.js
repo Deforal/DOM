@@ -1,9 +1,26 @@
-export const POSTfunc = () => {
+import { renderGET } from "./render.js";
+const buttonWrite = document.getElementById("button_submit");
+const nameInput = document.getElementById("name_for_comment");
+const commentItself = document.getElementById("comment_area");
+const newList = document.getElementById("list_wrapper");
+const quotePlaceholder = document.querySelector(".quote_placeholder_textarea")
+const quotePlaceholder_divs = document.querySelectorAll(".quote_placeholder")
+const formAdder = document.querySelector(".add-form");
+const loader = document.querySelector(".loader");
+let stringifyArr = ""
+let stringifyName
+const randArr = [];
+let userOfQuote = '';
+quotePlaceholder.value = "";
+let uneditedARR = [];
+const clearButton = document.querySelector(".quote_placeholder_clear")
+export const POSTfunc = (name, arr) => {
+    let ErrorNumber = 0
     fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
         method: "POST",
         body: JSON.stringify({
-          name: stringifyName,
-          text: stringifyArr
+          name: name,
+          text: arr
         })
       })
     .then((response) => {
@@ -23,34 +40,36 @@ export const POSTfunc = () => {
         const fetchPromise = fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
           method: "GET"
         })
+
+        .then((response) => {
+          console.log(response);
+          console.log("second");
+          if ((response.status === 201) || (response.status === 200)){
+            return response.json(); 
+          } else {
+            throw new Error("Ошибка сервера")
+          }
+        })
+        .then((responseData) => {
+          formAdder.classList.remove("display_none")
+          loader.classList.add("display_none")
+          renderGET(responseData)
+          alert("Добавлен комментарий")
+          buttonWrite.disabled = false;
+          buttonWrite.textContent = "Написать"
+          nameInput.value = "";
+          quotePlaceholder.value = "";
+          userOfQuote = "";
+          for (const element of quotePlaceholder_divs) {
+            element.classList.add("display_none")
+          }
+          commentItself.value = "";
+        })
       })
     
-    .then((response) => {
-        console.log(response);
-        console.log("second");
-        if ((response.status === 201) || (response.status === 200)){
-          return response.json(); 
-        } else {
-          throw new Error("Ошибка сервера")
-        }
-        
-      })
-    .then((responseData) => {
+    .catch ((error) =>{
         formAdder.classList.remove("display_none")
         loader.classList.add("display_none")
-        renderGET(responseData)
-        alert("Добавлен комментарий")
-        buttonWrite.disabled = false;
-        buttonWrite.textContent = "Написать"
-        nameInput.value = "";
-        quotePlaceholder.value = "";
-        userOfQuote = "";
-        for (const element of quotePlaceholder_divs) {
-          element.classList.add("display_none")
-        }
-        commentItself.value = "";
-      })
-    .catch ((error) =>{
         console.log(error);
         if (ErrorNumber === 400) {
           alert("Имя и комментарий должны быть длиннее 3-ех символов")
@@ -62,6 +81,8 @@ export const POSTfunc = () => {
       })
 } 
 export function GETfunc() {
+  const formAdder = document.querySelector(".add-form");
+  const loader = document.querySelector(".loader");
   fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
       method: "GET"
     })
