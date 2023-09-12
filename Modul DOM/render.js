@@ -1,30 +1,11 @@
 import { DELETEfunc, POSTfunc } from "./api.js";
 import { GETfunc } from "./api.js";
 "use strict";
-
-  const buttonWrite = document.getElementById("button_submit");
-  const nameInput = document.getElementById("name_for_comment");
-  const commentItself = document.getElementById("comment_area");
-  const newList = document.getElementById("list_wrapper");
-  const quotePlaceholder = document.querySelector(".quote_placeholder_textarea")
-  const quotePlaceholder_divs = document.querySelectorAll(".quote_placeholder")
-  const formAdder = document.querySelector(".add-form");
-  const loader = document.querySelector(".loader");
-  const loader_1 = document.querySelector(".loader_1")
   let stringifyArr = ""
   let stringifyName
   const randArr = [];
   let userOfQuote = '';
-  quotePlaceholder.value = "";
   let uneditedARR = [];
-  const clearButton = document.querySelector(".quote_placeholder_clear")
-  clearButton.addEventListener("click", () => {
-    quotePlaceholder.value = "";
-    for (const element of quotePlaceholder_divs) {
-      element.classList.add("display_none")
-      }
-    }
-  )
 
   let everyUser = []
   export function renderGET (responseData) {
@@ -76,7 +57,54 @@ import { GETfunc } from "./api.js";
       everyUser = randArr
       renderStudents();
   }
-
+const addFormFunc = () =>{
+  const formAdder = document.querySelector(".add-form");
+  formAdder.innerHTML = 
+  `<p>Автор:</p>
+  <input
+    type="text"
+    class="add-form-name"
+    placeholder="Введите ваше имя"
+    id="name_for_comment"
+  />
+  <p class="display_none quote_placeholder">Цитата:</p>
+  <div class="display_none quote_placeholder">
+    <textarea 
+      class="quote_placeholder_textarea" 
+      style="overflow: hidden;" 
+      disabled="yes">
+    </textarea>
+    <button class="quote_placeholder_clear">Очистить</button>
+  </div>
+  <p>Комментарий:</p>
+  <textarea
+    type="textarea"
+    class="add-form-text"
+    placeholder="Введите ваш коментарий"
+    rows="4"
+    id="comment_area"
+  ></textarea>
+  <div class="add-form-row">
+    <button class="add-form-button" id="button_submit">Написать</button>
+  </div>`
+  return
+}
+addFormFunc()
+const nameInput = document.getElementById("name_for_comment");
+const commentItself = document.getElementById("comment_area");
+const quotePlaceholder = document.querySelector(".quote_placeholder_textarea")
+const quotePlaceholder_divs = document.querySelectorAll(".quote_placeholder")
+quotePlaceholder.value = "";
+const buttonWrite = document.getElementById("button_submit");
+const newList = document.getElementById("list_wrapper");
+const clearButton = document.querySelector(".quote_placeholder_clear")
+  clearButton.addEventListener("click", () => {
+    quotePlaceholder.value = "";
+    for (const element of quotePlaceholder_divs) {
+      element.classList.add("display_none")
+      }
+    }
+)
 const renderStudents = () => {
     const everyComment = everyUser
       .map((user, index) => {

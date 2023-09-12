@@ -1,20 +1,6 @@
 import { renderGET } from "./render.js";
-const buttonWrite = document.getElementById("button_submit");
-const nameInput = document.getElementById("name_for_comment");
-const commentItself = document.getElementById("comment_area");
-const newList = document.getElementById("list_wrapper");
-const quotePlaceholder = document.querySelector(".quote_placeholder_textarea")
-const quotePlaceholder_divs = document.querySelectorAll(".quote_placeholder")
-const formAdder = document.querySelector(".add-form");
 const loader = document.querySelector(".loader");
 const loader_1 = document.querySelector(".loader_1")
-let stringifyArr = ""
-let stringifyName
-const randArr = [];
-let userOfQuote = '';
-quotePlaceholder.value = "";
-let uneditedARR = [];
-const clearButton = document.querySelector(".quote_placeholder_clear")
 export const POSTfunc = (name, arr) => {
     let ErrorNumber = 0
     fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
