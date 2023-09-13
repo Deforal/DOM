@@ -212,6 +212,9 @@ body {
 .add-form-row {
   display: flex;
   justify-content: flex-end;
+  gap: 38px;
+  align-items: center;
+  
 }
 
 .add-form-button {

@@ -2,13 +2,7 @@ import { renderGET } from "./render.js";
 const loader = document.querySelector(".loader");
 const loader_1 = document.querySelector(".loader_1")
 const formAdder = document.querySelector(".add-form");
-export const POSTfunc = (name, arr) => {
-  const nameInput = document.getElementById("name_for_comment");
-  const commentItself = document.getElementById("comment_area");
-  const quotePlaceholder = document.querySelector(".quote_placeholder_textarea")
-  const quotePlaceholder_divs = document.querySelectorAll(".quote_placeholder")
-  quotePlaceholder.value = "";
-  const buttonWrite = document.getElementById("button_submit");
+export const POSTfunc = (name, arr, nameInput, commentItself, quotePlaceholder, quotePlaceholder_divs, buttonWrite) => {
   let userOfQuote = '';
     let ErrorNumber = 0
     fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
@@ -77,7 +71,7 @@ export const POSTfunc = (name, arr) => {
 } 
 export function GETfunc() {
   const formAdder = document.querySelector(".add-form");
-  const loader = document.querySelector(".loader");
+  const loader_1 = document.querySelector(".loader_1");
   fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
       method: "GET"
     })

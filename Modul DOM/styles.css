@@ -205,6 +205,12 @@ body {
   display: flex;
   justify-content: flex-end;
 }
+.add-form-row_1 {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 38px;
+}
 
 .add-form-button {
   margin-top: 24px;
