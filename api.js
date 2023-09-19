@@ -2,7 +2,9 @@ import { renderGET } from "./render.js";
 const loader = document.querySelector(".loader");
 const loader_1 = document.querySelector(".loader_1")
 const formAdder = document.querySelector(".add-form");
-export const POSTfunc = (name, arr, nameInput, commentItself, quotePlaceholder, quotePlaceholder_divs, buttonWrite) => {
+const quotePlaceholder = document.querySelector(".quote_placeholder_textarea")
+const quotePlaceholder_divs = document.querySelectorAll(".quote_placeholder")
+export const POSTfunc = (name, arr, nameInput, commentItself, quotePlaceholder, quotePlaceholder_divs, buttonWrite, textarea) => {
   let userOfQuote = '';
     let ErrorNumber = 0
     fetch("https://wedev-api.sky.pro/api/v1/:egor-epifancev/comments", {
@@ -13,16 +15,16 @@ export const POSTfunc = (name, arr, nameInput, commentItself, quotePlaceholder, 
         })
       })
     .then((response) => {
-        console.log("first");
+        
         formAdder.classList.add("display_none")
         loader.classList.remove("display_none")
-        console.log(response.status);
+        
         if (response.status === 400) {
-          console.log("1");
+          
           ErrorNumber = 400
           throw new Error()
         } else if (response.status === 400) {
-          console.log("2");
+          
           ErrorNumber = 500
           throw new Error("500")
         }
@@ -31,8 +33,8 @@ export const POSTfunc = (name, arr, nameInput, commentItself, quotePlaceholder, 
         })
 
         .then((response) => {
-          console.log(response);
-          console.log("second");
+          
+          
           if ((response.status === 201) || (response.status === 200)){
             return response.json(); 
           } else {
@@ -49,17 +51,19 @@ export const POSTfunc = (name, arr, nameInput, commentItself, quotePlaceholder, 
           nameInput.value = "";
           quotePlaceholder.value = "";
           userOfQuote = "";
+          textarea = ""
           for (const element of quotePlaceholder_divs) {
             element.classList.add("display_none")
           }
           commentItself.value = "";
+          
         })
       })
     
     .catch ((error) =>{
         formAdder.classList.remove("display_none")
         loader.classList.add("display_none")
-        console.log(error);
+       
         if (ErrorNumber === 400) {
           alert("Имя и комментарий должны быть длиннее 3-ех символов")
         } else {
@@ -83,6 +87,7 @@ export function GETfunc() {
       loader_1.classList.add("display_none")
       renderGET(responseData)
   });
+  
 }
 
 
