@@ -7,8 +7,7 @@ let userOfQuote = '';
 let uneditedARR = [];
 let stringifyArr = ""
 let stringifyName
-let token = ''
-token = null
+let token = null
 let textarea = "";
 
 export const renderStudents = () => {
@@ -125,6 +124,7 @@ export function renderGET (responseData) {
       randArr1[0].comment = comment[0]
       randArr1[0].date = formattedDate
       randArr1[0].likes = responseData.comments[index].likes
+      randArr1[0].id = responseData.comments[index].id
       randArr1[0].index = randArr.length
       randArr1[0].quote = comment[1]
       if (Number(responseData.comments[index].isLiked) === 1) {
@@ -140,7 +140,7 @@ export function renderGET (responseData) {
     uneditedARR = newwArr
     everyUser = randArr
     renderStudents();
-    addFormFunc(token)
+    addFormFunc(token);
 }
 export const commentReply = () => {
   const quotePlaceholder_divs = document.querySelectorAll(".quote_placeholder")
@@ -176,6 +176,7 @@ export const commentReply = () => {
 export function postButton(formAdder) {
 const buttonWrite = document.getElementById("button_submit");
 buttonWrite.addEventListener("click", () => {
+  console.log(`tokien`, token);
   const nameInput = document.getElementById("name_for_comment");
   const commentItself = document.getElementById("comment_area");
   const quotePlaceholder = document.querySelector(".quote_placeholder_textarea")
@@ -214,9 +215,12 @@ buttonWrite.addEventListener("click", () => {
   buttonWrite.textContent = "Загрузка."
   const loader = document.querySelector(".loader")
   loader.textContent.replaceAll(" ", "")
-  POSTfunc(stringifyName, stringifyArr, nameInput, commentItself, quotePlaceholder, quotePlaceholder_divs, buttonWrite, textarea)
+  POSTfunc(token, stringifyArr, nameInput, commentItself, quotePlaceholder, quotePlaceholder_divs, buttonWrite, textarea)
+  .then(
+
+  )
+  
   renderStudents();
-  token = "Bearer bgc0b8awbwas6g5g5k5o5s5w606g37w3cc3bo3b83k39s3co3c83c03c";
 })
 }
   

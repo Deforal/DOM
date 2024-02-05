@@ -30,12 +30,23 @@ export const addFormFunc = (token) =>{
         <p>Нажмите чтобы зарегестрироваться.</p>
         <button class="add-form-button" id="button_login">Войти</button>
       </div>`
-      document.getElementById("button_login")
-      .addEventListener("click", () => {
-        token = "Bearer bgc0b8awbwas6g5g5k5o5s5w606g37w3cc3bo3b83k39s3co3c83c03ck"
-        addFormFunc(token)
-        console.log(token);
-      })
+      
+      document.getElementById("button_login").addEventListener("click", () => {
+        fetch("https://webdev-hw-api.vercel.app/api/user/login", {
+        method: "POST",
+        body: JSON.stringify({
+          login: "admin",
+          password: "admin",
+        }),
+        }).then((response) => {
+          return response.json();
+        }).then((user) => {
+          console.log(user.user.token);
+          token = `Bearer ${user.user.token}`;
+          console.log(token);
+          addFormFunc(token);
+        });
+      });
      }
     else {
       
@@ -70,6 +81,8 @@ export const addFormFunc = (token) =>{
 
       commentReply()
       postButton(formAdder)
+      console.log(token);
+      return token;
       }
     
   }
